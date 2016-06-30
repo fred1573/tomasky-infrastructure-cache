@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+       default-autowire="byName">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.tomasky.cache.redis" annotation-config="true"/>
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="50"/>
+        <property name="maxIdle" value="6"/>
+        <property name="minIdle" value="2"/>
+    </bean>
+
+    <bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory"/>
+    </bean>
+
+    <bean id="serializableRedisTemplate" class="com.tomasky.cache.redis.support.SerializableRedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory"/>
+    </bean>
+
+    <beans profile="dev">
+        <bean id="jedisConnectionFactory"
+              class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <property name="usePool" value="true"></property>
+            <property name="hostName" value="192.168.1.27"/>
+            <property name="port" value="6379"/>
+            <property name="password" value="111111"/>
+            <property name="timeout" value="100000"/>
+            <property name="database" value="9"></property>
+            <constructor-arg index="0" ref="jedisPoolConfig"/>
+        </bean>
+    </beans>
+    <beans profile="test">
+        <bean id="jedisConnectionFactory"
+              class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <property name="usePool" value="true"></property>
+            <property name="hostName" value="192.168.1.27"/>
+            <property name="port" value="6379"/>
+            <property name="password" value="111111"/>
+            <property name="timeout" value="100000"/>
+            <property name="database" value="9"></property>
+            <constructor-arg index="0" ref="jedisPoolConfig"/>
+        </bean>
+    </beans>
+    <beans profile="staging">
+        <bean id="jedisConnectionFactory"
+              class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <property name="usePool" value="true"></property>
+            <property name="hostName" value="115.28.185.117"/>
+            <property name="port" value="6379"/>
+            <property name="password" value="1ecd084e0048468d:91Doxhgnp6aL1pipwewyicug3ujnxe"/>
+            <property name="timeout" value="100000"/>
+            <property name="database" value="9"></property>
+            <constructor-arg index="0" ref="jedisPoolConfig"/>
+        </bean>
+    </beans>
+    <beans profile="production">
+        <bean id="jedisConnectionFactory"
+              class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <property name="usePool" value="true"></property>
+            <property name="hostName" value=""/>
+            <property name="port" value=""/>
+            <property name="password" value=""/>
+            <property name="timeout" value=""/>
+            <property name="database" value=""></property>
+            <constructor-arg index="0" ref="jedisPoolConfig"/>
+        </bean>
+    </beans>
+</beans>
